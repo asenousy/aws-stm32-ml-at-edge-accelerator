@@ -17,13 +17,13 @@ phases:
       - |
         if [ $NOT_EXIST ]; then
           echo "Download FSD50K Dataset" ;
-          ls
+          ls -l
           curl https://zenodo.org/api/records/4060432/files-archive -o files.zip;
-          ls
+          ls -l
           unzip files.zip;
-          ls
+          ls -l
           rm files.zip;
-          ls
+          ls -l
           mkdir temp;
           unzip FSD50K.ground_truth.zip -d temp/;
           zip -s 0 FSD50K.dev_audio.zip --out dev_audio-unsplit.zip;
