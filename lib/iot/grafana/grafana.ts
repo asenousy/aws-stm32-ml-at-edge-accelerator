@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { aws_grafana, Duration, aws_iam, aws_secretsmanager, aws_lambda_nodejs } from 'aws-cdk-lib';
+import { aws_grafana, Duration, aws_iam, aws_secretsmanager, aws_lambda, aws_lambda_nodejs } from 'aws-cdk-lib';
 import { TimeStreamDataSource } from './datasource/datasource';
 import { Dashboard } from './dashboard/dashboard';
 
@@ -16,9 +16,7 @@ export class Grafana extends Construct {
 
     const role = new aws_iam.Role(this, 'WorkspaceRole', {
       assumedBy: new aws_iam.ServicePrincipal('grafana.amazonaws.com'),
-      managedPolicies: [
-        aws_iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonTimestreamReadOnlyAccess'),
-      ],
+      managedPolicies: [aws_iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonTimestreamReadOnlyAccess')],
     });
 
     const workspace = new aws_grafana.CfnWorkspace(this, 'Workspace', {
@@ -33,13 +31,12 @@ export class Grafana extends Construct {
     const apiKeySecret = new aws_secretsmanager.Secret(this, 'ApiKeySecret', {});
     apiKeySecret.node.addDependency(workspace);
     const rotationFn = new aws_lambda_nodejs.NodejsFunction(this, 'key-rotation', {
+      runtime: aws_lambda.Runtime.NODEJS_18_X,
       environment: { SECRET_NAME: apiKeySecret.secretName, WORKSPACE_ID: workspace.attrId },
     });
     rotationFn.grantInvoke(new aws_iam.ServicePrincipal('secretsmanager.amazonaws.com'));
     apiKeySecret.grantWrite(rotationFn);
-    rotationFn.role?.addManagedPolicy(
-      aws_iam.ManagedPolicy.fromAwsManagedPolicyName('AWSGrafanaAccountAdministrator')
-    );
+    rotationFn.role?.addManagedPolicy(aws_iam.ManagedPolicy.fromAwsManagedPolicyName('AWSGrafanaAccountAdministrator'));
 
     apiKeySecret.addRotationSchedule('RotationSchedule', {
       rotationLambda: rotationFn,

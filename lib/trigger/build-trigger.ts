@@ -2,14 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 import { Construct } from 'constructs';
-import {
-  aws_codebuild,
-  aws_iam,
-  aws_lambda_nodejs,
-  CustomResource,
-  custom_resources,
-  Duration,
-} from 'aws-cdk-lib';
+import { aws_codebuild, aws_iam, aws_lambda_nodejs, CustomResource, custom_resources, Duration, aws_lambda } from 'aws-cdk-lib';
 
 type BuildTriggerProps = {
   buildProject: aws_codebuild.Project;
@@ -27,9 +20,11 @@ export class BuildTrigger extends Construct {
     });
     const buildProvidor = new custom_resources.Provider(this, 'BuildProvider', {
       onEventHandler: new aws_lambda_nodejs.NodejsFunction(this, 'build', {
+        runtime: aws_lambda.Runtime.NODEJS_18_X,
         initialPolicy: [buildPolicy],
       }),
       isCompleteHandler: new aws_lambda_nodejs.NodejsFunction(this, 'complete', {
+        runtime: aws_lambda.Runtime.NODEJS_18_X,
         environment: {
           projectName: buildProject.projectName,
         },

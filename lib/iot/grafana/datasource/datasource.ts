@@ -2,13 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 import { Construct } from 'constructs';
-import {
-  Stack,
-  CustomResource,
-  custom_resources,
-  aws_lambda_nodejs,
-  aws_secretsmanager,
-} from 'aws-cdk-lib';
+import { Stack, CustomResource, custom_resources, aws_lambda_nodejs, aws_secretsmanager, aws_lambda } from 'aws-cdk-lib';
 import generatePayload from './generatePayload';
 
 type TimeStreamDataSourceProps = {
@@ -26,7 +20,9 @@ export class TimeStreamDataSource extends Construct {
     const region = Stack.of(this).region;
     const { endpoint, apiKeySecret, database, table } = props;
 
-    const onEventHandler = new aws_lambda_nodejs.NodejsFunction(this, 'handler');
+    const onEventHandler = new aws_lambda_nodejs.NodejsFunction(this, 'handler', {
+      runtime: aws_lambda.Runtime.NODEJS_18_X,
+    });
     apiKeySecret.grantRead(onEventHandler);
 
     const datasourceProvider = new custom_resources.Provider(this, 'DataSourceProvider', {
