@@ -24,7 +24,7 @@ export class Dashboard extends Construct {
     const { endpoint, apiKeySecret, ...payloadProps } = props;
 
     const onEventHandler = new aws_lambda_nodejs.NodejsFunction(this, 'handler', {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
+      runtime: aws_lambda.Runtime.NODEJS_LATEST,
     });
     apiKeySecret.grantRead(onEventHandler);
     const dashboardProvider = new custom_resources.Provider(this, 'DashboardProvider', {

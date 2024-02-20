@@ -75,9 +75,7 @@ export class SagmakerPipeline extends Construct {
     });
 
     const sageMakerPipelineRole = new aws_iam.Role(this, 'ServiceCatalogProductRole', {
-      assumedBy: new aws_iam.CompositePrincipal(
-        new aws_iam.ServicePrincipal('sagemaker.amazonaws.com')
-      ),
+      assumedBy: new aws_iam.CompositePrincipal(new aws_iam.ServicePrincipal('sagemaker.amazonaws.com')),
       managedPolicies: [
         aws_iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
         aws_iam.ManagedPolicy.fromAwsManagedPolicyName('SecretsManagerReadWrite'),
@@ -122,9 +120,7 @@ export class SagmakerPipeline extends Construct {
     });
     dataSetsBucket.grantReadWrite(build);
     mlOpsCode.bucket.grantReadWrite(build);
-    build.role?.addManagedPolicy(
-      aws_iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
-    );
+    build.role?.addManagedPolicy(aws_iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
 
     const param = new aws_ssm.StringParameter(this, 'StringParameter', {
       stringValue: '0',
@@ -138,13 +134,10 @@ export class SagmakerPipeline extends Construct {
       ],
     });
 
-    const { ref: waitCompletionUrl } = new aws_cloudformation.CfnWaitConditionHandle(
-      this,
-      'CfnWaitConditionHandle' + Date.now()
-    );
+    const { ref: waitCompletionUrl } = new aws_cloudformation.CfnWaitConditionHandle(this, 'CfnWaitConditionHandle' + Date.now());
 
     const fn = new aws_lambda_nodejs.NodejsFunction(this, 'wait-handler', {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
+      runtime: aws_lambda.Runtime.NODEJS_LATEST,
       environment: {
         assetHash: mlOpsCode.assetHash,
         paramName: param.parameterName,

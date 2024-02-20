@@ -20,11 +20,11 @@ export class BuildTrigger extends Construct {
     });
     const buildProvidor = new custom_resources.Provider(this, 'BuildProvider', {
       onEventHandler: new aws_lambda_nodejs.NodejsFunction(this, 'build', {
-        runtime: aws_lambda.Runtime.NODEJS_18_X,
+        runtime: aws_lambda.Runtime.NODEJS_LATEST,
         initialPolicy: [buildPolicy],
       }),
       isCompleteHandler: new aws_lambda_nodejs.NodejsFunction(this, 'complete', {
-        runtime: aws_lambda.Runtime.NODEJS_18_X,
+        runtime: aws_lambda.Runtime.NODEJS_LATEST,
         environment: {
           projectName: buildProject.projectName,
         },

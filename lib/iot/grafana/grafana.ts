@@ -31,7 +31,7 @@ export class Grafana extends Construct {
     const apiKeySecret = new aws_secretsmanager.Secret(this, 'ApiKeySecret', {});
     apiKeySecret.node.addDependency(workspace);
     const rotationFn = new aws_lambda_nodejs.NodejsFunction(this, 'key-rotation', {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
+      runtime: aws_lambda.Runtime.NODEJS_LATEST,
       environment: { SECRET_NAME: apiKeySecret.secretName, WORKSPACE_ID: workspace.attrId },
     });
     rotationFn.grantInvoke(new aws_iam.ServicePrincipal('secretsmanager.amazonaws.com'));

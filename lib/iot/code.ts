@@ -52,7 +52,7 @@ export class Code extends Construct {
     const certificateArn = certificateCr.getAttString('certificateArn');
 
     const signingProfileFn = new aws_lambda_nodejs.NodejsFunction(this, 'signingProfile', {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
+      runtime: aws_lambda.Runtime.NODEJS_LATEST,
       initialPolicy: [
         new aws_iam.PolicyStatement({
           actions: ['signer:PutSigningProfile', 'signer:CancelSigningProfile'],
@@ -220,7 +220,7 @@ export class Code extends Construct {
     signedFirmwareBucket.grantReadWrite(otaRole);
 
     const otaFn = new aws_lambda_nodejs.NodejsFunction(this, 'ota', {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
+      runtime: aws_lambda.Runtime.NODEJS_LATEST,
       environment: {
         signingProfileName,
         thingNamePrefix,

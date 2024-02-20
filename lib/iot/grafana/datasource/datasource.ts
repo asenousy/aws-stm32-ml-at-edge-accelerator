@@ -21,7 +21,7 @@ export class TimeStreamDataSource extends Construct {
     const { endpoint, apiKeySecret, database, table } = props;
 
     const onEventHandler = new aws_lambda_nodejs.NodejsFunction(this, 'handler', {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
+      runtime: aws_lambda.Runtime.NODEJS_LATEST,
     });
     apiKeySecret.grantRead(onEventHandler);
 
