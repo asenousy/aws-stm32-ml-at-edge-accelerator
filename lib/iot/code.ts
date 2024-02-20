@@ -52,6 +52,7 @@ export class Code extends Construct {
     const certificateArn = certificateCr.getAttString('certificateArn');
 
     const signingProfileFn = new aws_lambda_nodejs.NodejsFunction(this, 'signingProfile', {
+      runtime: aws_lambda.Runtime.NODEJS_16_X,
       initialPolicy: [
         new aws_iam.PolicyStatement({
           actions: ['signer:PutSigningProfile', 'signer:CancelSigningProfile'],
@@ -167,9 +168,7 @@ export class Code extends Construct {
         packageZip: false,
       }),
       environment: {
-        buildImage: aws_codebuild.LinuxBuildImage.fromDockerRegistry(
-          'public.ecr.aws/y2t8c1e9/cube_ide_image:latest'
-        ),
+        buildImage: aws_codebuild.LinuxBuildImage.fromDockerRegistry('public.ecr.aws/y2t8c1e9/cube_ide_image:latest'),
       },
       buildSpec: aws_codebuild.BuildSpec.fromObject({
         version: '0.2',
@@ -199,9 +198,7 @@ export class Code extends Construct {
         },
       },
     });
-    build.role?.addToPrincipalPolicy(
-      new aws_iam.PolicyStatement({ actions: ['kms:Decrypt'], resources: ['*'] })
-    );
+    build.role?.addToPrincipalPolicy(new aws_iam.PolicyStatement({ actions: ['kms:Decrypt'], resources: ['*'] }));
     stmCode.bucket.grantRead(build);
     modelCode.grantRead(build);
     firmwareBucket.grantReadWrite(build);
@@ -211,9 +208,7 @@ export class Code extends Construct {
 
     const otaRole = new aws_iam.Role(this, 'otaRole', {
       assumedBy: new aws_iam.ServicePrincipal('iot.amazonaws.com'),
-      managedPolicies: [
-        aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonFreeRTOSOTAUpdate'),
-      ],
+      managedPolicies: [aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonFreeRTOSOTAUpdate')],
     });
     otaRole.addToPrincipalPolicy(
       new aws_iam.PolicyStatement({
@@ -225,6 +220,7 @@ export class Code extends Construct {
     signedFirmwareBucket.grantReadWrite(otaRole);
 
     const otaFn = new aws_lambda_nodejs.NodejsFunction(this, 'ota', {
+      runtime: aws_lambda.Runtime.NODEJS_16_X,
       environment: {
         signingProfileName,
         thingNamePrefix,
@@ -243,10 +239,7 @@ export class Code extends Construct {
       ],
     });
 
-    firmwareBucket.addEventNotification(
-      aws_s3.EventType.OBJECT_CREATED,
-      new aws_s3_notifications.LambdaDestination(otaFn)
-    );
+    firmwareBucket.addEventNotification(aws_s3.EventType.OBJECT_CREATED, new aws_s3_notifications.LambdaDestination(otaFn));
 
     this.thingNamePrefix = thingNamePrefix;
     this.publicKey = publicKey;
