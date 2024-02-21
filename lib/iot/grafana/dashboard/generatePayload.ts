@@ -107,7 +107,7 @@ export default (config: Config) => ({
             },
             measure: 'class',
             rawQuery:
-              "SELECT measure_value::varchar as Sounds, time  FROM $__database.$__table WHERE device_name = '$device' AND time BETWEEN from_milliseconds(${__from}) AND from_milliseconds(${__to})",
+              "SELECT measure_value::varchar as Sounds, time  FROM $__database.$__table WHERE device_name = '$device' AND measure_name = 'class' AND time BETWEEN from_milliseconds(${__from}) AND from_milliseconds(${__to})",
             refId: 'A',
             table: config.table,
           },
